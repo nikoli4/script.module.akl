@@ -8,7 +8,7 @@ import collections
 import os
 import sys
 import shutil
-from urllib.parse import urlencode
+from urllib.parse import urlencode, unquote
 
 import xbmc
 import xbmcgui
@@ -355,55 +355,60 @@ def restore_screensaver():
 # See https://forum.kodi.tv/showthread.php?tid=236320
 #
 def delete_cache_texture(database_path_str):
-    logger.debug(f'kodi_delete_cache_texture() Deleting texture "{database_path_str}:')
-
-    # --- Query texture database ---
-    json_fname_str = text.escape_JSON(database_path_str)
     parameters = {
-        "properties": ["url", "cachedurl", "lasthashcheck", "imagehash", "sizes"],
-        "filter": {
-            "field": "url",
-            "operator": "is",
-            "value": json_fname_str
-        }
+        "properties": ["url", "cachedurl", "lasthashcheck", "imagehash", "sizes"]
     }
-    
-    r_dic = jsonrpc_query('Textures.GetTextures', json.dumps(parameters), verbose=True)
-    # --- Delete cached texture ---
-    num_textures = len(r_dic['textures'])
-    logger.debug('kodi_delete_cache_texture() Returned list with {0} textures'.format(num_textures))
-    if num_textures == 1:
-        textureid = r_dic['textures'][0]['textureid']
-        logger.debug('kodi_delete_cache_texture() Deleting texture with id {0}'.format(textureid))
-        prop_str = '{{ "textureid" : {0} }}'.format(textureid)
-        r_dic = jsonrpc_query('Textures.RemoveTexture', prop_str, verbose=False)
-    else:
-        logger.warning('kodi_delete_cache_texture() Number of textures different from 1. No texture deleted from cache')
 
-
-def print_texture_info(database_path_str):
-    logger.debug('kodi_print_texture_info() File "{0}"'.format(database_path_str))
-
-    # --- Query texture database ---
-    json_fname_str = text.escape_JSON(database_path_str)
-    prop_str = (
-        '{' +
-        '"properties" : [ "url", "cachedurl", "lasthashcheck", "imagehash", "sizes"], ' +
-        '"filter" : {{ "field" : "url", "operator" : "is", "value" : "{0}" }}'.format(json_fname_str) +
-        '}'
+    r_dic = jsonrpc_query(
+        'Textures.GetTextures',
+        parameters,
+        verbose=False
     )
-    r_dic = jsonrpc_query('Textures.GetTextures', prop_str, verbose=False)
 
-    # --- Delete cached texture ---
-    num_textures = len(r_dic['textures'])
-    logger.debug('print_texture_info() Returned list with {0} textures'.format(num_textures))
-    if num_textures == 1:
-        logger.debug('Cached URL  {0}'.format(r_dic['textures'][0]['cachedurl']))
-        logger.debug('Hash        {0}'.format(r_dic['textures'][0]['imagehash']))
-        logger.debug('Last check  {0}'.format(r_dic['textures'][0]['lasthashcheck']))
-        logger.debug('Texture ID  {0}'.format(r_dic['textures'][0]['textureid']))
-        logger.debug('Texture URL {0}'.format(r_dic['textures'][0]['url']))
+    textures = r_dic.get('result', {}).get('textures', [])
 
+    target_path = database_path_str.replace('\\', '/').lower()
+    matching_textures = []
+
+    for texture in textures:
+        texture_url = texture.get('url', '')
+
+        if not texture_url.startswith('image://'):
+            continue
+
+        decoded_url = unquote(texture_url[8:])
+
+        if decoded_url.endswith('/transform?size=thumb'):
+            decoded_url = decoded_url[:-21]
+        elif decoded_url.endswith('/'):
+            decoded_url = decoded_url[:-1]
+
+        decoded_path = decoded_url.replace('\\', '/').lower()
+
+        if decoded_path == target_path:
+            matching_textures.append(texture)
+
+    logger.debug(
+        'kodi_delete_cache_texture() Found {0} matching textures'.format(
+            len(matching_textures)
+        )
+    )
+
+    for texture in matching_textures:
+        textureid = texture['textureid']
+
+        logger.debug(
+            'kodi_delete_cache_texture() Deleting texture with id {0}: {1}'.format(
+                textureid,
+                texture.get('url', '')
+            )
+        )
+
+        jsonrpc_query(
+            'Textures.RemoveTexture',
+            {'textureid': textureid},
+            verbose=False
+        )
 
 #
 # Kodi dialog with select box based on a list.
