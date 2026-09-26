@@ -75,14 +75,16 @@ class LauncherABC(object):
                  webservice_host: str,
                  webservice_port: int,
                  executorFactory: ExecutorFactoryABC = None,
-                 execution_settings: ExecutionSettings = None):
-        
+                 execution_settings: ExecutionSettings = None,
+                 entity_type: int = None):
+
         self.launcher_settings = {
             'name': self.get_name()
         }
         
         self.launcher_id = launcher_id
         self.rom_id = rom_id
+        self.entity_type = entity_type
         
         self.webservice_host = webservice_host
         self.webservice_port = webservice_port
@@ -237,6 +239,11 @@ class LauncherABC(object):
             'addon_id': self.get_launcher_addon_id(),
             'settings': launcher_settings
         }
+
+        if self.entity_type is not None:
+            post_data['entity_type'] = self.entity_type
+            post_data['entity_id'] = self.rom_id
+
         is_stored = api.client_post_launcher_settings(self.webservice_host, self.webservice_port, post_data)
         if not is_stored:
             kodi.notify_error('Failed to store launchers settings')

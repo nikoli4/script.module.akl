@@ -564,3 +564,64 @@ def emudata_get_program_extensions(app:str) -> str:
             return extensions
 
     return ''
+
+
+def emudata_get_platform_extensions(platform_name: str) -> str:
+    if not platform_name:
+        return ''
+
+    platform = get_AKL_platform(platform_name)
+    compact_name = platform.compact_name
+
+    extensions = {
+        # Nintendo
+        'nes':       'nes',
+        'snes':      'sfc|smc',
+        'n64':       'z64|n64|v64',
+        'gb':        'gb',
+        'gbcolor':   'gbc',
+        'gba':       'gba',
+        'nds':       'nds',
+        'ndsi':      'nds|dsi',
+        'n3ds':      '3ds|3dsx|cci|cxi',
+        'new3ds':    '3ds|3dsx|cci|cxi',
+        'gamecube':  'iso|gcm|rvz|gcz|ciso',
+        'wii':       'iso|wbfs|rvz|gcz|ciso',
+        'wiiu':      'wud|wux|rpx',
+        'switch':    'xci|nsp|nro',
+
+        # Sega
+        'sms':        'sms',
+        'gamegear':   'gg',
+        'megadrive':  'md|gen|bin',
+        'megacd':     'cue|chd',
+        'saturn':     'cue|chd',
+        'dreamcast':  'gdi|cdi|cue|chd',
+
+        # Sony
+        'psx':     'cue|chd|pbp',
+        'ps2':     'iso|chd',
+        'ps3':     'iso|pkg',
+        'ps4':     'pkg',
+        'psp':     'iso|cso|pbp',
+        'psvita':  'vpk',
+
+        # Microsoft
+        'xbox':     'iso|xbe',
+        'xbox360':  'iso|xex',
+        'xboxone':  'iso',
+
+        # NEC
+        'pce':    'pce',
+        'pcecd':  'cue|chd',
+        'pcfx':   'cue|chd',
+        'sgx':    'sgx|pce',
+
+        # SNK
+        'mame':      'zip',
+        'neocd':     'cue|chd',
+        'ngp':       'ngp',
+        'ngpcolor':  'ngc',
+    }
+
+    return extensions.get(compact_name, '')

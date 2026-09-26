@@ -160,6 +160,14 @@ def client_post_scraped_roms(host: str, port: int, data: dict) -> bool:
         logger.debug(f'RESPONSE: {response_data}')
     return code == 200
 
+def client_post_scraped_system(host: str, port: int, data: dict) -> bool:
+    uri = f'http://{host}:{port}/store/system/updated'
+    if VERBOSE:
+        logger.debug(f'POST REQUEST: {data}')
+    response_data, code = net.post_JSON_URL(uri, data)
+    if VERBOSE:
+        logger.debug(f'RESPONSE: {response_data}')
+    return code == 200
 
 ###############################################################
 # CLIENT OBJECTS

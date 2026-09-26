@@ -23,6 +23,7 @@ import webbrowser
 import logging
 import re
 import json
+import os
 
 import xbmc
 
@@ -355,6 +356,14 @@ class WindowsExecutor(ExecutorABC):
     def execute(self, application: str, *args, **kwargs):
         logger.debug('WindowsExecutor::execute() Starting ...')
         command = [application] + list(args)
+
+        # Normalize Windows filesystem paths before launching.
+        # Only normalize arguments that point to an existing local file or directory.
+        for i, value in enumerate(command):
+            if isinstance(value, str):
+                normalized = value.replace('/', '\\')
+                if os.path.exists(normalized):
+                    command[i] = normalized
 
         separator = kwargs.get(SEPARATOR_KEYWORD, " ")
         for key, value in kwargs.items():

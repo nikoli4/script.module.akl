@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.module.akl" name="Advanced Kodi Launcher Library Module" version="0.0.1" provider-name="chrisism">
+<addon id="script.module.akl" name="Advanced Kodi Launcher Library Module" version="1.3.0" provider-name="chrisism, nikoli4">
   <requires>
       <import addon="xbmc.python" version="3.0.0"/>
       <import addon="script.module.requests" version="2.22.0.1"/>
@@ -12,8 +12,8 @@
     <license>GNU General Public License version 2</license>
     <email>crizizz@gmail.com</email>
     <forum>https://forum.kodi.tv/showthread.php?tid=366351</forum>
-    <website>https://github.com/chrisism/script.module.akl</website>
-    <source>https://github.com/chrisism/script.module.akl</source>
+    <website>https://github.com/nikoli4/script.module.akl</website>
+    <source>https://github.com/nikoli4/script.module.akl</source>
     <assets>
       <icon>media/icon.png</icon>
       <fanart>media/fanart.jpg</fanart>

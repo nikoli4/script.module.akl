@@ -59,7 +59,7 @@ def jsonrpc_query(method=None, params=None, verbose=False):
         "id": 1}
     if params:
         query["params"] = params
-                
+
     try:
         jrpc = xbmc.executeJSONRPC(json.dumps(query))
         response = json.loads(jrpc)
@@ -67,7 +67,7 @@ def jsonrpc_query(method=None, params=None, verbose=False):
             logger.debug('jsonrpc_query() response = \n{}'.format(pprint.pformat(response)))
     except Exception as exc:
         logger.exception(u'jsonrpc_query(): JSONRPC Error:\n{}'.format(exc), 1)
-        response = {}    
+        response = {}
     return response
 
 
@@ -76,14 +76,14 @@ def event(sender=None, command='test', data=None):
     if not sender:
         addon = xbmcaddon.Addon()
         sender = addon.getAddonInfo('id')
-        
+
     data = data or {}
     event_params = {
         'sender': sender,
         'message': command,
         'data': data
     }
-    
+
     logger.debug("event(): {}/{} => {}".format(sender, command, data))
     jsonrpc_query('JSONRPC.NotifyAll', event_params)
     #xbmc.executebuiltin('NotifyAll({}, {}, {})'.format(sender, method, data))
@@ -94,14 +94,14 @@ def execute(cmd):
 
 
 def execute_uri(uri, args: dict = None):
-    if args is not None:    
+    if args is not None:
         uri = '{}?{}'.format(uri, urlencode(args))
     logger.debug('Executing RunPlugin(%s)...', uri)
     xbmc.executebuiltin('RunPlugin({})'.format(uri))
 
 
 def update_uri(uri, args: dict = None, reset_history=False):
-    if args is not None:    
+    if args is not None:
         uri = f'{uri}?{urlencode(args)}'
     logger.debug('Executing Container.Update(%s)...', uri)
     cmd = f'Container.Update({uri}, replace)' if reset_history else f'Container.Update({uri})'
@@ -119,16 +119,16 @@ def run_script(script: str, args: dict = None, wait_for_execution: bool = False)
                 args_list.append(key)
                 args_list.append(str(value))
         script_cmd = 'RunScript({},{})'.format(script, ','.join(args_list))
-        
+
     logger.debug('Executing {}...'.format(script_cmd))
     xbmc.executebuiltin(script_cmd, wait_for_execution)
 
 
 def play_item(item_label: str, path: str, type: str, info: dict):
-    
+
     listitem = xbmcgui.ListItem(label=item_label, label2=item_label)
     listitem.setInfo(type, info)
-    
+
     logger.debug('Calling xbmc.Player().play() ...')
     xbmc.Player().play(path, listitem)
 
@@ -173,8 +173,8 @@ def display_text_window_mono(window_title, info_text):
 #
 def dialog_OK(text, title='Advanced Kodi Launcher'):
     xbmcgui.Dialog().ok(title, text)
- 
-   
+
+
 # Returns True is YES was pressed, returns False if NO was pressed or dialog canceled.
 def dialog_yesno(text, title='Advanced Kodi Launcher'):
     return xbmcgui.Dialog().yesno(title, text)
@@ -220,7 +220,7 @@ def dialog_keyboard(title, text='') -> str:
 #
 # This supports files and images only.
 # xbmcgui.Dialog().browseMultiple(type, heading, shares[, mask, useThumbs, treatAsFolder, defaultt])
-# 
+#
 # This supports directories, files, images and writable directories.
 # xbmcgui.Dialog().browseSingle(type, heading, shares[, mask, useThumbs, treatAsFolder, defaultt])
 #
@@ -265,6 +265,11 @@ def get_current_window_id():
 def set_windowprop(key, value, window_id=10000):
     window = xbmcgui.Window(window_id)
     window.setProperty(key, value)
+
+
+def get_windowprop(key, window_id=10000):
+    window = xbmcgui.Window(window_id)
+    return window.getProperty(key)
 
 
 def dict_to_windowprops(data=None, prefix="", window_id=10000):
@@ -434,19 +439,24 @@ class OrdDictionaryDialog(object):
     def __init__(self):
         self.dialog = xbmcgui.Dialog()
 
-    def select(self, title: str, options_odict: collections.OrderedDict, preselect=None, use_details: bool = False):
-        preselected_index = -1
-        if preselect is not None:
-            preselected_value = options_odict[preselect]
-            preselected_index = list(options_odict.values()).index(preselected_value)
-            
-        # --- Execute select dialog menu logic ---
-        selection = self.dialog.select(title, [v for v in options_odict.values()], useDetails=use_details, preselect=preselected_index)       
+    def select(self, title: str, options_odict: collections.OrderedDict,
+               preselect=None, use_details: bool = False):
+        preselect_idx = -1
+
+        if preselect is not None and preselect in options_odict:
+            preselect_idx = list(options_odict.keys()).index(preselect)
+
+        selection = self.dialog.select(
+            title,
+            [v for v in options_odict.values()],
+            useDetails=use_details,
+            preselect=preselect_idx
+        )
+
         if selection < 0:
             return None
-        key = list(options_odict.keys())[selection]
 
-        return key
+        return list(options_odict.keys())[selection]
 
 
 #
@@ -456,26 +466,34 @@ class MultiSelectDialog(object):
     def __init__(self):
         self.dialog = xbmcgui.Dialog()
 
-    def select(self, title: str, options_odict: collections.OrderedDict, preselected=[], use_details: bool = False):
-        preselected_indices = None
+    def select(self, title: str, options_odict: collections.OrderedDict, preselected=None, use_details: bool = False):
+        preselected_indices = []
+
         if preselected is not None and len(preselected) > 0:
-            preselected_indices = []
             for preselect in preselected:
                 preselected_value = options_odict[preselect]
-                preselected_indices.append(list(options_odict.values()).index(preselected_value))
-            
+                preselected_indices.append(
+                    list(options_odict.values()).index(preselected_value)
+                )
+
         # --- Execute select dialog menu logic ---
-        selection = self.dialog.multiselect(title, [v for v in options_odict.values()],
-                                            useDetails=use_details,
-                                            preselect=preselected_indices)
+        selection = self.dialog.multiselect(
+            title,
+            [v for v in options_odict.values()],
+            useDetails=use_details,
+            preselect=preselected_indices
+        )
+
         if selection is None:
             return None
         if len(selection) == 0:
             return []
-        
+
         selected_keys = []
         for selected in selection:
-            selected_keys.append(list(options_odict.keys())[selected])
+            selected_keys.append(
+                list(options_odict.keys())[selected]
+            )
 
         return selected_keys
 
@@ -507,7 +525,7 @@ class ProgressDialog(object):
 
     def incrementStep(self, message=None):
         self.updateProgress(self.progress_step + 1, message)
-        
+
     # Update progress and optionally update messages as well.
     # If not messages specified then keep current message/s
     def updateProgress(self, step_index, message=None):
@@ -580,13 +598,13 @@ class ProgressDialog(object):
 # the previous wizarddialog in each new one.
 # You can then call the method 'runWizard()' on the last created instance.
 #
-# Each wizard has a customFunction which will can be called after executing this 
+# Each wizard has a customFunction which will can be called after executing this
 # specific dialog. It also has a conditionalFunction which can be called before
 # executing this dialog which will indicate if this dialog may be shown (True return value).
 #
 class WizardDialogABC(object):
     __metaclass__ = abc.ABCMeta
-    
+
     @abc.abstractmethod
     def executeDialog(self, properties: dict):
         pass
@@ -685,7 +703,7 @@ class WizardDialog_Selection(WizardDialog):
 # Wizard dialog which shows a list of options to select from.
 # In comparison with the normal SelectionWizardDialog, this version allows a dictionary or key/value
 # list as the selectable options. The selected key will be used.
-# 
+#
 class WizardDialog_DictionarySelection(WizardDialog):
     def __init__(self, decoratorDialog, property_key, title, options,
                  customFunction=None, conditionalFunction=None):
@@ -730,7 +748,7 @@ class WizardDialog_FileBrowse(WizardDialog):
         if not output:
             self._cancel()
             return None
-       
+
         return output
 
 
@@ -949,7 +967,7 @@ def kodi_display_exception(ex):
     st_dic['dialog'] = ex.dialog
     st_dic['msg'] = ex.msg
     display_status_message(st_dic)
-    
+
 # -------------------------------------------------------------------------------------------------
 # Kodi specific stuff
 # -------------------------------------------------------------------------------------------------

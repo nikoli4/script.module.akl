@@ -161,6 +161,7 @@ class ScraperSettings(object):
         scraper_settings.search_term_mode = settings['search_term_mode']
         scraper_settings.game_selection_mode = settings['game_selection_mode']
         scraper_settings.asset_selection_mode = settings['asset_selection_mode']
+        scraper_settings.metadata_IDs_to_scrape = settings['metadata_IDs_to_scrape']
         scraper_settings.asset_IDs_to_scrape = settings['asset_IDs_to_scrape']
         scraper_settings.overwrite_existing_meta = settings['overwrite_existing_meta']
         scraper_settings.overwrite_existing_assets = settings['overwrite_existing_assets']
@@ -1078,6 +1079,34 @@ class ScrapeStrategy(object):
         is_stored = api.client_post_scraped_roms(self.webservice_host, self.webservice_port, post_data)
         if not is_stored:
             kodi.notify_error('Failed to store scraped ROMs')
+
+    def store_scraped_system(
+            self,
+            scraper_id: str,
+            romcollection_id: str,
+            system: api.MetaDataObj):
+
+        if system is None:
+            self.logger.warning(
+                'Skipping store action. No system data provided.'
+            )
+            return
+
+        post_data = {
+            'romcollection_id': romcollection_id,
+            'akl_addon_id': scraper_id,
+            'system': system.get_data_dic(),
+            'applied_settings': self.scraper_settings.get_data_dic()
+        }
+
+        is_stored = api.client_post_scraped_system(
+            self.webservice_host,
+            self.webservice_port,
+            post_data
+        )
+
+        if not is_stored:
+            kodi.notify_error('Failed to store scraped system')
 
     def _translate(self, key):
         if key == constants.SCRAPE_ACTION_NONE:
