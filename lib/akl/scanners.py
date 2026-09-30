@@ -319,7 +319,7 @@ class RomScannerStrategy(ScannerStrategyABC):
         selected_option()  # execute
         return self.edit()  # recursive call
         
-    def scan(self):
+    def scan(self, suppress_empty_warning=False):
                
         # --- Open ROM scanner report file ---
         launcher_report = report.FileReporter(self.reports_dir, self.get_name(), report.LogReporter())
@@ -358,7 +358,7 @@ class RomScannerStrategy(ScannerStrategyABC):
         candidates = sorted(candidates, key=lambda c: c.get_sort_value())
         new_roms = self._processFoundItems(candidates, roms, launcher_report)
         
-        if not new_roms and not dead_roms:
+        if not new_roms and not dead_roms and roms:
             return
 
         num_new_roms = len(new_roms)
@@ -373,7 +373,12 @@ class RomScannerStrategy(ScannerStrategyABC):
         if len(roms) == 0:
             launcher_report.write('WARNING ROMs has no ROMs!')
             launcher_report.close()
-            kodi.dialog_OK('No ROMs found! Make sure ROM set directory and file extensions are correct.')
+
+            if not suppress_empty_warning:
+                kodi.dialog_OK(
+                    'No ROMs found! Make sure ROM set directory and file extensions are correct.'
+                )
+
             return
         
         if num_new_roms == 0:
