@@ -1,3 +1,11 @@
+## 1.3.1
+
+- Added support for suppressing the empty-ROM warning during Setup Wizard scans.
+- Improved empty-ROM scan handling for the Advanced Kodi Launcher Setup Wizard.
+- Added ZIP as a default ROM extension for supported Nintendo and Sega cartridge-based platforms.
+- Added Wii U WUA support.
+- Added default platform mappings for Sega 32X, Genesis, and Sega CD.
+
 ## Current
 - Fix Application launcher not launching the app (fixed by: mallexxx)
 - Cleanup log; case insensitive APPPATH, APPBASE
