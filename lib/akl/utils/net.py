@@ -97,10 +97,17 @@ def get_random_UserAgent():
         return 'Mozilla/5.0 (compatible; MSIE ' + version + '; ' + os_str + '; ' + token + 'Trident/' + engine + ')'
 
 
-def download_img(img_url, file_path: io.FileName):
+def download_img(img_url, file_path: io.FileName, url_log=None):
     # --- Download image to a buffer in memory ---
     # If an exception happens here no file is created (avoid creating files with 0 bytes).
-    file_data, http_code = get_URL(img_url, verify_ssl=False, content_type=ContentType.BYTES)
+    # url_log may contain a sanitized version of img_url for services whose
+    # download URLs contain credentials or other sensitive query parameters.
+    file_data, http_code = get_URL(
+        img_url,
+        url_log=url_log,
+        verify_ssl=True,
+        content_type=ContentType.BYTES
+    )
     if http_code != 200:
         return
     

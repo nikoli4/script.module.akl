@@ -232,7 +232,7 @@ class FilterROM(object):
         else:
             # If it is not MAME it is No-Intro
             # Name of bios is: '[BIOS] Rom name example (Rev A).zip'
-            BIOS_m = re.findall('\[BIOS\]', basename)
+            BIOS_m = re.findall(r'\[BIOS\]', basename)
             if BIOS_m:
                 self.logger.debug('FilterROM::ROM_is_filtered() Filtered No-Intro BIOS "{}"'.format(basename))
                 return True
@@ -801,8 +801,7 @@ class ScrapeStrategy(object):
         
         # By default always use local image if found in case scraper fails.
         ret_asset_path = local_asset_path
-        self.logger.debug('local_asset_path "{}"'.format(local_asset_path))
-        self.logger.debug('asset_path_noext "{}"'.format(asset_path_noext_FN.getPath()))
+        self.logger.debug(f'Preparing local path for {asset_info_id} asset')
 
         # --- If no candidates available just clean the ROM Title and return ---
         if self.asset_scraper_obj.candidate is None:
@@ -913,7 +912,7 @@ class ScrapeStrategy(object):
         if image_url is None or not image_url:
             self.logger.debug('Error resolving URL')
             return ret_asset_path
-        self.logger.debug('Resolved {0} to URL "{1}"'.format(asset_info_id, image_url_log))
+        self.logger.debug('Resolved {} asset URL'.format(asset_info_id))
 
         # --- Resolve URL extension ---
         self.logger.debug('Resolving asset URL extension...')
@@ -945,8 +944,7 @@ class ScrapeStrategy(object):
             scraper_text = f'Downloading {asset_info_id} from {self.asset_scraper_obj.get_name()}...'
             self.pdialog.updateMessage(scraper_text)
         image_local_path = asset_path_noext_FN.append('.' + image_ext)
-        self.logger.debug(f'Download  "{image_url_log}"')
-        self.logger.debug(f'Into file "{image_local_path.getPath()}"')
+        self.logger.debug(f'Downloading {asset_info_id} asset')
         try:
             image_local_path = self.asset_scraper_obj.download_image(image_url, image_local_path)
         except Exception:
@@ -1507,8 +1505,8 @@ class Scraper(object):
     # Can overwrite this method in scraper implementation to support extra actions, like
     # request throttling.
     def download_image(self, image_url, image_local_path):
-        # net_download_img() never prints URLs or paths.
-        net.download_img(image_url, image_local_path)
+        # Do not expose remote asset URLs in the Kodi log.
+        net.download_img(image_url, image_local_path, url_log='[asset URL hidden]')
         return image_local_path
 
     # Not used now. candidate['id'] is used as hash value for the whole candidate dictionary.

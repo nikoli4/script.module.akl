@@ -1,3 +1,9 @@
+## 1.4.0
+
+- Added Windows shortcut (.lnk) as a default ROM extension for the Windows platform.
+- Improved scraper log privacy by preventing remote asset URLs and local asset paths from being written to debug logs.
+- Enabled SSL certificate verification for scraper image downloads.
+
 ## 1.3.1
 
 - Added support for suppressing the empty-ROM warning during Setup Wizard scans.

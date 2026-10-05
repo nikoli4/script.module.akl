@@ -610,6 +610,7 @@ def emudata_get_platform_extensions(platform_name: str) -> str:
         'psvita':  'vpk',
 
         # Microsoft
+        'windows':   'lnk',
         'xbox':     'iso|xbe',
         'xbox360':  'iso|xex',
         'xboxone':  'iso',
