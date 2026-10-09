@@ -138,7 +138,18 @@ class AklAddonArguments(object):
         self.addon_name = addon_name
 
         self.parser = argparse.ArgumentParser(prog=addon_name)
-        self.parser.add_argument('--cmd', help="Command to execute", choices=['launch', 'scan', 'scrape', 'scrape_system', 'configure'])
+        self.parser.add_argument(
+            '--cmd',
+            help="Command to execute",
+            choices=[
+                'launch',
+                'scan',
+                'scrape',
+                'scrape_system',
+                'configure',
+                'update-settings'
+            ]
+        )
         self.parser.add_argument('--type', help="Plugin type", choices=['LAUNCHER', 'SCANNER', 'SCRAPER'],
                                  default=constants.AddonType.LAUNCHER.name)
         self.parser.add_argument('--server_host', type=str, help="Host")

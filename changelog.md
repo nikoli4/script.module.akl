@@ -1,3 +1,8 @@
+## 1.4.1
+
+- Added Console as a supported system artwork type.
+- Added support for the scraper update-settings command.
+
 ## 1.4.0
 
 - Added Windows shortcut (.lnk) as a default ROM extension for the Windows platform.
