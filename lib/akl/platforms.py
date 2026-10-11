@@ -604,7 +604,7 @@ def emudata_get_platform_extensions(platform_name: str) -> str:
         # Sony
         'psx':     'cue|chd|pbp',
         'ps2':     'iso|chd',
-        'ps3':     'iso|pkg',
+        'ps3':     'iso|bin',
         'ps4':     'pkg',
         'psp':     'iso|cso|pbp',
         'psvita':  'vpk',
