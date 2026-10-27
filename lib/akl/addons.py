@@ -155,6 +155,12 @@ class AklAddonArguments(object):
         self.parser.add_argument('--server_host', type=str, help="Host")
         self.parser.add_argument('--server_port', type=int, help="Port")
         self.parser.add_argument('--rom_id', type=str, help="ROM ID")
+        self.parser.add_argument(
+            '--managed_launch_id',
+            type=str,
+            default=None,
+            help="Optional managed Windows launch identifier"
+        )
         self.parser.add_argument('--source_id', type=str, help="Source ID")
         self.parser.add_argument('--entity_id', type=str, help="Entity ID")
         self.parser.add_argument('--entity_type', type=int, help="Entity Type (ROM|ROMCOLLECTION|SOURCE)")

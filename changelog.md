@@ -1,3 +1,11 @@
+## 1.4.2
+
+- Improved ROM checksum handling through Kodi VFS, including SMB/network paths and binary ROM files.
+- Increased checksum read chunk sizes for better performance.
+- Updated default PlayStation 3 ROM extensions to ISO and BIN.
+- Added managed Windows launch identifier support for AKL Revival.
+- Fixed launcher wizard cancellation handling so it checks the wizard result instead of existing launcher settings.
+
 ## 1.4.1
 
 - Added Console as a supported system artwork type.

@@ -143,7 +143,7 @@ class LauncherABC(object):
             wizard = self._builder_get_wizard(wizard)
             # >> Run wizard
             self.launcher_args = wizard.runWizard(self.launcher_settings)
-            if not self.launcher_settings:
+            if self.launcher_args is None:
                 return False
         else:
             if not self.edit():
