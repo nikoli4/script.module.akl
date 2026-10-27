@@ -786,8 +786,10 @@ def misc_calculate_checksums(full_file_path: FileName):
         return None
     
     logger.debug('Computing checksums "{}"'.format(full_file_path.getPath()))
+    file_opened = False
     try:
         f = full_file_path.open('rb')
+        file_opened = True
         crc_prev = 0
         md5 = hashlib.md5()
         sha1 = hashlib.sha1()
@@ -798,13 +800,20 @@ def misc_calculate_checksums(full_file_path: FileName):
         crc_digest = '{:08X}'.format(crc_prev & 0xFFFFFFFF)
         md5_digest = md5.hexdigest()
         sha1_digest = sha1.hexdigest()
-        size = full_file_path.stat().st_size
+        stat_size = full_file_path.stat().st_size
+        size = stat_size() if callable(stat_size) else stat_size
         #os.path.getsize(full_file_path)
     except Exception as ex:
         logger.exception('Exception in plugin')
         logger.debug('(Exception) In misc_calculate_checksums()')
         logger.debug('Returning None')
         return None
+    finally:
+        if file_opened:
+            try:
+                full_file_path.close()
+            except Exception:
+                logger.exception('Exception closing checksum file')
     checksums = {
         'crc': crc_digest.upper(),
         'md5': md5_digest.upper(),
@@ -849,7 +858,10 @@ def misc_calculate_stream_checksums(file_bytes):
 #
 def misc_read_file_in_chunks(file_object, chunk_size=8192):
     while True:
-        data = file_object.read(chunk_size)
+        if hasattr(file_object, 'readBytes'):
+            data = file_object.readBytes(chunk_size)
+        else:
+            data = file_object.read(chunk_size)
         if not data:
             break
         yield data
