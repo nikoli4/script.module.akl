@@ -854,9 +854,9 @@ def misc_calculate_stream_checksums(file_bytes):
 
 
 #
-# Lazy function (generator) to read a file piece by piece. Default chunk size: 8k.
+# Lazy function (generator) to read a file piece by piece. Default chunk size: 256 KiB.
 #
-def misc_read_file_in_chunks(file_object, chunk_size=8192):
+def misc_read_file_in_chunks(file_object, chunk_size=262144):
     while True:
         if hasattr(file_object, 'readBytes'):
             data = file_object.readBytes(chunk_size)
