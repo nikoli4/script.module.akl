@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.module.akl" name="AKL Revival: Library Module" version="1.4.3" provider-name="chrisism, nikoli4">
+<addon id="script.module.akl" name="AKL Revival: Library Module" version="1.4.4" provider-name="chrisism, nikoli4">
   <requires>
       <import addon="xbmc.python" version="3.0.0"/>
       <import addon="script.module.requests" version="2.22.0.1"/>
@@ -15,8 +15,8 @@
     <website>https://github.com/nikoli4/script.module.akl</website>
     <source>https://github.com/nikoli4/script.module.akl</source>
     <assets>
-      <icon>media/icon.png</icon>
-      <fanart>media/fanart.jpg</fanart>
+      <icon>media/icon-revival.png</icon>
+      <fanart>media/fanart-revival.jpg</fanart>
     </assets>
     <news>See changelog.md for information about the latest release.</news>
   </extension>
