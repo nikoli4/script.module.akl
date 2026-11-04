@@ -1,3 +1,15 @@
+## 1.4.5
+
+- Updated AKL Revival release branding and metadata.
+
+## 1.4.4
+
+- Updated the icon and fanart assets to AKL Revival artwork.
+
+## 1.4.3
+
+- Updated the shared module branding for AKL Revival.
+
 ## 1.4.2
 
 - Improved ROM checksum handling through Kodi VFS, including SMB/network paths and binary ROM files.
